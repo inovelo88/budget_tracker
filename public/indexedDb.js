@@ -1,19 +1,6 @@
-export function checkForIndexedDb() {
-    if (!window.indexedDB) {
-      console.log("Your browser doesn't support a stable version of IndexedDB.");
-      return false;
-    }
-    return true;
-  }
   
-  export function useIndexedDb(databaseName, storeName, method, object) {
-    return new Promise((resolve, reject) => {
-      const request = window.indexedDB.open(databaseName, 1);
-      let db,
-        tx,
-        store;
-  
-      request.onupgradeneeded = function(e) {
+
+     request.onupgradeneeded = function(e) {
         const db = request.result;
         db.createObjectStore(storeName, { keyPath: "_id" });
       };
@@ -44,6 +31,7 @@ export function checkForIndexedDb() {
           db.close();
         };
       };
-    });
-  }
-  
+    
+
+  //listening for app coming back online//
+  window.addEventListener("online", checkDatabase)

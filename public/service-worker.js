@@ -2,25 +2,24 @@ const FILES_TO_CACHE = [
     "/",
     "/index.html",
     "/style.css",
-    "/dist/bundle.js",
-    
+    "/indexedDb.js",
   ];
   
   const STATIC_CACHE = "static-cache-v1";
-  const RUNTIME_CACHE = "runtime-cache";
+  const DATA_CACHE = "data-cache";
   
   self.addEventListener("install", event => {
     event.waitUntil(
       caches
         .open(STATIC_CACHE)
-        .then(cache => cache.addAll(FILES_TO_CACHE))
+        (cache => cache.addAll(FILES_TO_CACHE))
         .then(() => self.skipWaiting())
     );
   });
   
   // The activate handler takes care of cleaning up old caches.
   self.addEventListener("activate", event => {
-    const currentCaches = [STATIC_CACHE, RUNTIME_CACHE];
+    const currentCaches = [STATIC_CACHE, DATA_CACHE];
     event.waitUntil(
       caches
         .keys()
@@ -55,7 +54,7 @@ const FILES_TO_CACHE = [
     if (event.request.url.includes("/api/images")) {
       // make network request and fallback to cache if network request fails (offline)
       event.respondWith(
-        caches.open(RUNTIME_CACHE).then(cache => {
+        caches.open(DATA_CACHE).then(cache => {
           return fetch(event.request)
             .then(response => {
               cache.put(event.request, response.clone());
@@ -75,7 +74,7 @@ const FILES_TO_CACHE = [
         }
   
         // request is not in cache. make network request and cache the response
-        return caches.open(RUNTIME_CACHE).then(cache => {
+        return caches.open(DATA_CACHE).then(cache => {
           return fetch(event.request).then(response => {
             return cache.put(event.request, response.clone()).then(() => {
               return response;
